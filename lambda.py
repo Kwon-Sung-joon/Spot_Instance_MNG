@@ -23,13 +23,12 @@ class Asg:
             AutoScalingGroupNames=[
                 ASG_NAME
         ])
-        
-        #as-is spot instance capacity
-        AS_IS=asg_desc['AutoScalingGroups'][0]['DesiredCapacity']
-        for i in asg_desc['AutoScalingGroups'][0]['Instances']:
-        if i['LifecycleState'] == 'Detaching':
-            AS_IS -= 1;
 
+        #as-is spot instance capacity
+        AS_IS=asg_desc['AutoScalingGroups'][0]['DesiredCapacity'];
+        for i in asg_desc['AutoScalingGroups'][0]['Instances']:
+            if i['LifecycleState'] == 'Detaching':
+                AS_IS -= 1;
         #to-be spot instance capacity
         TO_BE=AS_IS+1
         
@@ -41,16 +40,16 @@ class Asg:
 
         #scale-out spot insatnce
         if IS_SPOT == True:
-            print("Scale Out Spot Insatnces... {0} : {1} ---> {2}".format(ASG_NAME,AS_IS,TO_BE))
+            print("Step2. Scale Out Spot Insatnces... {0} : {1} ---> {2}".format(ASG_NAME,AS_IS,TO_BE))
             set_desired = self.asg_client.set_desired_capacity(
                 AutoScalingGroupName=ASG_NAME,
                 DesiredCapacity=TO_BE)
-        
+
         #scale-out on-demand insatnce
         elif IS_SPOT == False:
             #create lt on-demand version
             #self.create_lt_version(LT_NAME);
-            print("Scale Out On-Demand Insatnces... {0} : {1} ---> {2}".format(ASG_NAME,AS_IS_ON_DEMAND,AS_IS_ON_DEMAND+1));
+            print("Step2. Scale Out On-Demand Insatnces... {0} : {1} ---> {2}".format(ASG_NAME,AS_IS_ON_DEMAND,AS_IS_ON_DEMAND+1));
             response = self.asg_client.update_auto_scaling_group(
                 AutoScalingGroupName=ASG_NAME,
                 MixedInstancesPolicy={
@@ -88,7 +87,7 @@ class Asg:
                 print("");
                 #print("EC2 {0} dose Detaching...".format(INSTANCE_ID));
             elif INSTANCE_ID not in ARR_INSTANCES:
-                print("EC2 {0} dose Detached !".format(INSTANCE_ID));
+                print("Step3. EC2 {0} dose Detached !".format(INSTANCE_ID));
                 FLAG=True;
                 self.attach_to_garbage_group(INSTANCE_ID,ASG_Spot_Pool);
                 break;
@@ -142,34 +141,31 @@ def lambda_handler(event, context):
         body=json.loads(records[0].get('body'));
         detail=body.get('detail');
         
-        print("terminating instance {0} after detach".format(detail['instance-id']))
+        print("Step1. terminating instance {0} after detach".format(detail['instance-id']))
         #ASG_NAME=get_target(event['detail']['instance-id']);
         ASG_NAME=asg_client.get_target(detail['instance-id']);
         if ASG_NAME == "ASG_Prod_Spot_Instances" :
             return 0;
-        
-        print("ASG name is {0}".format(ASG_NAME))
-        
-            
+
         asg_client.detach_target(detail['instance-id'],ASG_NAME);
         
-        print("target entering detach...")
+        print("Step2. target entering detach...")
         asg_client.terminate_target(detail['instance-id'],ASG_NAME);
-
+        return 0;
     #trigger is event
     else:
         #spot insatnce rebalance
         if event['detail-type'] == 'EC2 Instance Rebalance Recommendation' or event['detail-type'] == 'EC2 Spot Instance Interruption Warning':
-            print("instance : {0} rebalance recommendations...".format(event['detail']['instance-id']));
+            print("Step1. instance : {0} {1}...".format(event['detail']['instance-id'],event['detail-type']));
             ASG_NAME=asg_client.get_target(event['detail']['instance-id']);
-            print("ASG name is {0}".format(ASG_NAME))
+
             asg_client.increaseASG(ASG_NAME,True);
 
         ##spot insatnce scale-out fail occurred -> scale-out on-demand instance
         else:
-            print("error occurred !!! errorCode : {0} , errorMessage: {1} ".format(event['detail']['errorCode'],event['detail']['errorMessage']));
+            print("Step1. error occurred !!! errorCode : {0} , errorMessage: {1} ".format(event['detail']['errorCode'],event['detail']['errorMessage']));
             for tag in event['detail']['requestParameters']['tagSpecificationSet']['items'][0]['tags']:
                 if tag['key']=='aws:autoscaling:groupName':
                     ASG_NAME=tag['value'];
-            print("ASG name is {0}".format(ASG_NAME))
+
             asg_client.increaseASG(ASG_NAME,False);
