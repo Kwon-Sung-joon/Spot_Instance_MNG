@@ -1,0 +1,31 @@
+rule : spot-instance-interruption-rule
+
+{
+  "source": ["aws.ec2"],
+  "detail-type": ["EC2 Spot Instance Interruption Warning"]
+}
+
+Targets : lambda, sqs, cw log_group
+
+
+
+
+rule : no-spot-capacity-rule
+{
+  "source": ["aws.ec2"],
+  "detail-type": ["AWS API Call via CloudTrail"],
+  "detail": {
+    "eventSource": ["ec2.amazonaws.com"],
+    "eventName": ["RunInstances"],
+    "errorMessage": ["There is no Spot capacity available that matches your request. Launching EC2 instance failed."]
+  }
+}
+Targets : lambda, cw log_group
+
+
+rule : spot-warning
+{
+  "source": ["aws.ec2"],
+  "detail-type": ["EC2 Instance Rebalance Recommendation"]
+}
+Targets : cw log_group
