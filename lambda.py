@@ -26,7 +26,10 @@ class Asg:
         
         #as-is spot instance capacity
         AS_IS=asg_desc['AutoScalingGroups'][0]['DesiredCapacity']
-        
+        for i in asg_desc['AutoScalingGroups'][0]['Instances']:
+        if i['LifecycleState'] == 'Detaching':
+            AS_IS -= 1;
+
         #to-be spot instance capacity
         TO_BE=AS_IS+1
         
@@ -133,7 +136,6 @@ def lambda_handler(event, context):
     try:
         #chk trigger is event or sqs msg.
         event['detail']
-    
     #trigger is sqs msg
     except Exception:
         records=event.get('Records');
@@ -153,7 +155,7 @@ def lambda_handler(event, context):
         
         print("target entering detach...")
         asg_client.terminate_target(detail['instance-id'],ASG_NAME);
-    
+
     #trigger is event
     else:
         #spot insatnce rebalance
@@ -164,7 +166,6 @@ def lambda_handler(event, context):
             asg_client.increaseASG(ASG_NAME,True);
 
         ##spot insatnce scale-out fail occurred -> scale-out on-demand instance
-
         else:
             print("error occurred !!! errorCode : {0} , errorMessage: {1} ".format(event['detail']['errorCode'],event['detail']['errorMessage']));
             for tag in event['detail']['requestParameters']['tagSpecificationSet']['items'][0]['tags']:
