@@ -2,9 +2,9 @@
 {
     "Records": [
         {
-            "messageId": "d4e2310e-efd6-439b-a3cf-274f08df4a17",
-            "receiptHandle": "AQEBTPSrTmBZRlWId5Y56wBupEWaJX6KowYpagc1+ZSjqFCdWI14O+dnRZLgFAlCCb/l79X4A1kk2HMdKycQWfI0WmT96dbiQpXm0na0bfcKj9FUiSGaHUnIESHNt6tNmr40FfimHFDcDfct9HFRst+E/vPZ0/rnQVwZzH8LVbN+S4AdxtP1c4OSHPqRArwAMRHr3t/J4DC4W+SExg3nSFqYxBhkGfyAF845W7/AYTaQewQjPCk7nbYxUMUWCxwn9Uu+Y/ZikfVCM4eiLHpIgzui4OfKcDenHJiVv2AOlVZVRaNfWE6zLfkFGXpMGnNxCx9r8BXb0oeoIJ418mO6qcNZGR0q8DkDNEkfjbxDufaLTq+JQDQzXA0WxfKA1aCbazYbPGrWZbOHQab4ucQTc4Qgtw==",
-            "body": "{\n  \"version\": \"0\",\n  \"id\": \"0688371b-dce9-8466-d54e-3bd01ce15f86\",\n  \"detail-type\": \"EC2 Spot Instance Interruption Warning\",\n  \"source\": \"aws.ec2\",\n  \"account\": \"298385711329\",\n  \"time\": \"2024-02-27T04:38:25Z\",\n  \"region\": \"ap-northeast-2\",\n  \"resources\": [\n      \"arn:aws:ec2:ap-northeast-2a:instance/i-047a7313e0ae50b50\"\n  ],\n  \"detail\": {\n      \"instance-id\": \"i-047a7313e0ae50b50\",\n      \"instance-action\": \"terminate\"\n  }\n}",
+            "messageId": "d4e2310e7",
+            "receiptHandle": "AQEBTPSrTmBZRlWId5Y56wBupEWaJX6KowYpagc1+ZSjq",
+            "body": "{\n  \"version\": \"0\",\n  \"id\": \"0688371b-dce9-8466-d54e-3bd01ce15f86\",\n  \"detail-type\": \"EC2 Spot Instance Interruption Warning\",\n  \"source\": \"aws.ec2\",\n  \"account\": \"<ACCOUNT-ID>\",\n  \"time\": \"2024-02-27T04:38:25Z\",\n  \"region\": \"ap-northeast-2\",\n  \"resources\": [\n      \"arn:aws:ec2:ap-northeast-2a:instance/i-047a7313e0ae50b50\"\n  ],\n  \"detail\": {\n      \"instance-id\": \"i-047a7313e0ae50b50\",\n      \"instance-action\": \"terminate\"\n  }\n}",
             "attributes": {
                 "ApproximateReceiveCount": "1",
                 "SentTimestamp": "1709014312709",
@@ -14,7 +14,7 @@
             "messageAttributes": {},
             "md5OfBody": "0060bbff701f8c7df6c48e0725e26b4e",
             "eventSource": "aws:sqs",
-            "eventSourceARN": "arn:aws:sqs:ap-northeast-2:298385711329:spot_ec2_sqs",
+            "eventSourceARN": "arn:aws:sqs:ap-northeast-2:<ACCOUNT-ID>:spot_ec2_sqs",
             "awsRegion": "ap-northeast-2"
         }
     ]
